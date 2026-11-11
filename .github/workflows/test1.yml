@@ -2,9 +2,10 @@
 name: pierwszy_przeplyw
 
 # Controls when the workflow will run
+# on:
+#   schedule:
+#     - cron: "*/2 * * * *"
 on:
-  schedule:
-    - cron: "*/2 * * * *"
   workflow_dispatch:
     inputs:
       wybor_klienta:
