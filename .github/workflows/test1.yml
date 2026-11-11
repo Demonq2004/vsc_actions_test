@@ -3,47 +3,47 @@ name: pierwszy_przeplyw
 
 # Controls when the workflow will run
 on:
-    schedule:
-        - cron: "*/2 * * * *"
-    workflow_dispatch:
-        inputs:
-            wybor_klienta:
-                description: "Wybierz klienta:"
-                required: true
-                default: "Contoso"
-                type: choice
-                options:
-                    - Contoso
-                    - Nwtraders
-                    - Arcacorp
-            nazwa_operatora:
-                description: "Podaj swoje imię i nazwisko:"
-                required: false
-                type: string
+  schedule:
+    - cron: "*/2 * * * *"
+  workflow_dispatch:
+    inputs:
+      wybor_klienta:
+        description: "Wybierz klienta:"
+        required: true
+        default: "Contoso"
+        type: choice
+        options:
+          - Contoso
+          - Nwtraders
+          - Arcacorp
+      nazwa_operatora:
+        description: "Podaj swoje imię i nazwisko:"
+        required: false
+        type: string
 
 jobs:
-    moje_pierwsze_zadanie:
-        runs-on: debian13_runner1
+  moje_pierwsze_zadanie:
+    runs-on: debian13_runner1
 
-        steps:
-            - name: Sprawdzamy wersję Python
-              run: python3 -V
+    steps:
+      - name: Sprawdzamy wersję Python
+        run: python3 -V
 
-            - name: Wyświetl aktualny katalog roboczy
-              run: pwd
+      - name: Wyświetl aktualny katalog roboczy
+        run: pwd
 
-            - name: Wyświetl listę plików
-              run: ls -a
+      - name: Wyświetl listę plików
+        run: ls -a
 
-            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-            - uses: actions/checkout@v4
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
 
-            - name: Wyświetl listę plików po checkout
-              run: ls -a
+      - name: Wyświetl listę plików po checkout
+        run: ls -a
 
-            - name: Testujemy zmienne input
-              run: |
-                  echo "Wybrałeś klienta: $KLIENT"
-                  echo "Podane imię i nazwisko: ${{ inputs.nazwa_operatora }}"
-              env:
-                  KLIENT: ${{ inputs.wybor_klienta }}
+      - name: Testujemy zmienne input
+        run: |
+          echo "Wybrałeś klienta: $KLIENT"
+          echo "Podane imię i nazwisko: ${{ inputs.nazwa_operatora }}"
+        env:
+          KLIENT: ${{ inputs.wybor_klienta }}
