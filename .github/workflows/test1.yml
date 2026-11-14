@@ -2,9 +2,6 @@
 name: pierwszy_przeplyw
 
 # Controls when the workflow will run
-# on:
-#   schedule:
-#     - cron: "*/2 * * * *"
 on:
   workflow_dispatch:
     inputs:
@@ -24,7 +21,14 @@ on:
 
 jobs:
   moje_pierwsze_zadanie:
-    runs-on: debian13_runner1
+    runs-on: ubuntu-latest
+
+    # Zmienne środowiskowe dla kroków w jobie
+    env:
+      NFT_URL: https://www.netfilter.org/projects/nftables/files/nftables-1.0.6.1.tar.xz
+      NFT_DIR: downloads
+      NFT_FILE: nftables-1.0.6.1.tar.xz
+      NFT_KEY_FILE: downloads/nftables.url
 
     steps:
       - name: Sprawdzamy wersję Python
@@ -34,13 +38,34 @@ jobs:
         run: pwd
 
       - name: Wyświetl listę plików
-        run: ls -a
+        run: ls -la
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
+      # --- CACHE NFTABLES ---
+      - name: Przygotuj katalog i plik z URL do klucza cache
+        run: |
+          mkdir -p "$NFT_DIR"
+          echo "$NFT_URL" > "$NFT_KEY_FILE"
+          echo "Klucz cache będzie bazował na zawartości: $NFT_KEY_FILE"
+
+      - name: Przywróć/zapisz cache dla nftables
+        id: cache-nft
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.NFT_DIR }}/nftables-1.0.6.1.tar.xz
+          key: nftables-${{ runner.os }}-${{ hashFiles(env.NFT_KEY_FILE) }}
+
+      - name: Pobierz nftables (jeśli brak w cache)
+        if: steps.cache-nft.outputs.cache-hit != 'true'
+        run: |
+          echo "Brak trafienia w cache — pobieram z: $NFT_URL"
+          curl -fL "$NFT_URL" -o "$NFT_DIR/$NFT_FILE"
+          ls -lh "$NFT_DIR"
+
       - name: Wyświetl listę plików po checkout
-        run: ls -a
+        run: ls -la
 
       - name: Testujemy zmienne input
         run: |
